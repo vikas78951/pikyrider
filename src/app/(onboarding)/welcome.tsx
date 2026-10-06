@@ -6,9 +6,11 @@ import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RadialBackground from "@/components/visuals/RadialBackground";
 import { useRouter } from "expo-router";
+import { useOnboardingStore } from "@/store/useOnboardingStore";
 
 const Auth = () => {
   const router = useRouter();
+  const setFlow = useOnboardingStore((s) => s.setFlow);
   return (
     <SafeAreaView className="bg-canvas flex-1 p-6">
       <RadialBackground className={"-z-10"} />
@@ -53,13 +55,22 @@ const Auth = () => {
         <View className="gap-3">
           <Button
             variant="tertiary"
-            onPress={() => router.push("/(onboarding)/signup")}
+            onPress={() => {
+              setFlow("signup");
+              router.push("/(onboarding)/signup");
+            }}
             showIcon={true}
           >
             Sign up
           </Button>
 
-          <Button variant="secondary" onPress={() => console.log("signin")}>
+          <Button
+            variant="secondary"
+            onPress={() => {
+              setFlow("signin");
+              router.push("/(onboarding)/signin");
+            }}
+          >
             Sign in
           </Button>
 

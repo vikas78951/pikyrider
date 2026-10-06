@@ -14,27 +14,26 @@ import StepperHeader from "@/components/ui/StepperHeader";
 import FormSectionHeader from "@/components/ui/FormSectionHeader";
 import CustomInput from "@/components/formElement/CustomInput";
 import Button from "@/components/ui/Button";
-import { Lock, AtSign, Phone } from "lucide-react-native";
+import { Mail, Lock } from "lucide-react-native";
 import { useOnboardingStore } from "@/store/useOnboardingStore";
-import { authIdentifierSchema, detectAuthMethod } from "@/lib/validation/auth";
+import { emailSchema } from "@/lib/validation/auth";
 
-export default function SignupStepScreen() {
+export default function SigninStepScreen() {
   const router = useRouter();
   const { setFlow, setIdentifier, identifier } = useOnboardingStore();
 
-  const [value, setValue] = useState(identifier || "");
+  const [email, setEmail] = useState(identifier || "");
   const [error, setError] = useState<string | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const currentStep = 1;
-  const totalSteps = 5;
+  const totalSteps = 2;
 
-  const detectedMethod = detectAuthMethod(value);
-
-  const handleChangeText = (text: string) => {
-    setValue(text);
+  const handleEmailChange = (text: string) => {
+    setEmail(text);
     if (error) {
-      const result = authIdentifierSchema.safeParse(text.trim());
+      // Re-validate dynamically if an error was already visible
+      const result = emailSchema.safeParse(text.trim());
       if (result.success) {
         setError(undefined);
       }
@@ -42,13 +41,12 @@ export default function SignupStepScreen() {
   };
 
   const handleNext = () => {
-    const trimmed = value.trim();
-    const result = authIdentifierSchema.safeParse(trimmed);
+    const trimmed = email.trim();
+    const result = emailSchema.safeParse(trimmed);
 
     if (!result.success) {
       setError(
-        result.error.issues[0]?.message ||
-          "Please enter a valid email address or phone number",
+        result.error.issues[0]?.message || "Please enter a valid email address",
       );
       return;
     }
@@ -56,9 +54,9 @@ export default function SignupStepScreen() {
     setError(undefined);
     setIsSubmitting(true);
 
-    const method = detectAuthMethod(trimmed);
-    setFlow("signup");
-    setIdentifier(trimmed, method);
+    // Save to Zustand store
+    setFlow("signin");
+    setIdentifier(trimmed, "email");
 
     setIsSubmitting(false);
     router.push("/(onboarding)/otp");
@@ -72,9 +70,9 @@ export default function SignupStepScreen() {
     }
   };
 
-  const handleSwitchToSignin = () => {
-    setFlow("signin");
-    router.replace("/(onboarding)/signin");
+  const handleSwitchToSignup = () => {
+    setFlow("signup");
+    router.replace("/(onboarding)/signup");
   };
 
   return (
@@ -93,29 +91,25 @@ export default function SignupStepScreen() {
 
             <View className="mt-8">
               <FormSectionHeader
-                caption="Your account"
-                title="What’s your mobile or email?"
-                description="We’ll send a one-time code to confirm it’s you."
+                caption="Welcome back"
+                title="What’s your email?"
+                description="We’ll send a one-time code to sign you in."
                 className="mt-12 mb-8"
               />
 
-              {/* Custom Input */}
+              {/* Email Input */}
               <View className="mt-8">
                 <CustomInput
-                  label="Mobile or Email"
+                  label="Email address"
                   icon={
-                    detectedMethod === "phone" ? (
-                      <Phone size={20} color={error ? "#EF4444" : "#838383"} />
-                    ) : (
-                      <AtSign size={20} color={error ? "#EF4444" : "#838383"} />
-                    )
+                    <Mail size={20} color={error ? "#EF4444" : "#838383"} />
                   }
-                  placeholder="name@example.com or phone"
-                  value={value}
-                  onChangeText={handleChangeText}
+                  placeholder="name@example.com"
+                  value={email}
+                  onChangeText={handleEmailChange}
                   keyboardType="email-address"
-                  returnKeyType="done"
                   autoCapitalize="none"
+                  returnKeyType="done"
                   onSubmitEditing={handleNext}
                   error={error}
                 />
@@ -127,14 +121,14 @@ export default function SignupStepScreen() {
             <View className="flex-row items-center justify-center gap-1.5 mb-3">
               <Lock size={14} color="#616161" />
               <Text className="text-muted font-lexend-regular text-[12px]">
-                No passwords. No inbox noise.
+                Passwordless login. Quick & secure.
               </Text>
             </View>
             <Button
               variant="tertiary"
               onPress={handleNext}
               showIcon={true}
-              disabled={!value.trim() || isSubmitting}
+              disabled={!email.trim() || isSubmitting}
               loading={isSubmitting}
             >
               Next

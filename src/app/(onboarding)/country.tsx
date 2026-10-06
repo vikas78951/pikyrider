@@ -17,6 +17,8 @@ import CountryListItem, {
 } from "@/components/formElement/CountryListItem";
 import Button from "@/components/ui/Button";
 import { Search, Check } from "lucide-react-native";
+import { useOnboardingStore } from "@/store/useOnboardingStore";
+import { countrySchema } from "@/lib/validation/auth";
 
 const COUNTRIES_DATA: CountryItem[] = [
   { id: "ca", name: "Canada", region: "North America", flagEmoji: "🇨🇦" },
@@ -33,10 +35,17 @@ const COUNTRIES_DATA: CountryItem[] = [
 
 export default function CountryScreen() {
   const router = useRouter();
+  const {
+    country: storedCountry,
+    setCountry: setStoreCountry,
+    setIsAuthenticated,
+  } = useOnboardingStore();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCountry, setSelectedCountry] = useState<CountryItem | null>(
-    COUNTRIES_DATA[0], // Canada selected by default
+    storedCountry || COUNTRIES_DATA[0],
   );
+  const [isFinishing, setIsFinishing] = useState(false);
 
   const currentStep = 5;
   const totalSteps = 5;
@@ -51,8 +60,16 @@ export default function CountryScreen() {
   }, [searchQuery]);
 
   const handleFinish = () => {
-    console.log("Onboarding completed with country:", selectedCountry);
-    // Route to main app
+    if (!selectedCountry) return;
+
+    const result = countrySchema.safeParse(selectedCountry);
+    if (!result.success) return;
+
+    setIsFinishing(true);
+    setStoreCountry(selectedCountry);
+    setIsAuthenticated(true);
+    setIsFinishing(false);
+
     router.replace("/(app)");
   };
 
@@ -129,7 +146,8 @@ export default function CountryScreen() {
                 onPress={handleFinish}
                 showIcon={true}
                 icon={<Check size={19} color="#0E0E0E" />}
-                disabled={!selectedCountry}
+                disabled={!selectedCountry || isFinishing}
+                loading={isFinishing}
               >
                 Finish setup
               </Button>

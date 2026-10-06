@@ -8,11 +8,14 @@ import SelectionCard, {
   SelectionCardOption,
 } from "@/components/formElement/SelectionCard";
 import Button from "@/components/ui/Button";
-import { User, Sparkles, HelpCircle, ShieldAlert } from "lucide-react-native";
+import { User, Sparkles, HelpCircle } from "lucide-react-native";
+import { useOnboardingStore } from "@/store/useOnboardingStore";
+import { genderSchema } from "@/lib/validation/auth";
 
 export default function GenderScreen() {
   const router = useRouter();
-  const [selectedGender, setSelectedGender] = useState<string>("man");
+  const { gender, setGender: setStoreGender } = useOnboardingStore();
+  const [selectedGender, setSelectedGender] = useState<string>(gender || "man");
 
   const currentStep = 4;
   const totalSteps = 5;
@@ -65,7 +68,10 @@ export default function GenderScreen() {
   ];
 
   const handleNext = () => {
-    console.log("Gender selected:", selectedGender);
+    const result = genderSchema.safeParse(selectedGender);
+    if (!result.success) return;
+
+    setStoreGender(selectedGender);
     router.push("/(onboarding)/country");
   };
 
