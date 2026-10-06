@@ -1,11 +1,11 @@
-import { Redirect, Stack } from "expo-router"
+import { Redirect, Stack } from "expo-router";
 
 export default function AppLayout() {
-  const isAuthenticated = false
+  const isAuthenticated = false;
 
   if (!isAuthenticated) {
-    return <Redirect href="/(onboarding)/welcome" />
+    return <Redirect href="/(onboarding)/welcome" />;
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

@@ -43,7 +43,7 @@ module.exports = {
       fontSize: {
         // Display
         "display-xl": ["48px", { lineHeight: "102%", fontWeight: "400" }],
-        "display-lg": ["30px", { lineHeight: "115%", fontWeight: "700" }],
+        "display-lg": ["30px", { lineHeight: "115%", fontWeight: "500" }],
 
         // Headings
         "heading-xl": ["28px", { lineHeight: "36px", fontWeight: "400" }],

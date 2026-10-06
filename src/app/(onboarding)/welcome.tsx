@@ -5,9 +5,12 @@ import TerenMap from "@/components/visuals/TerenMap";
 import { Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import RadialBackground from "@/components/visuals/RadialBackground";
+import { useRouter } from "expo-router";
+
 const Auth = () => {
+  const router = useRouter();
   return (
-    <SafeAreaView className="bg-canvas flex-1 p-4">
+    <SafeAreaView className="bg-canvas flex-1 p-6">
       <RadialBackground className={"-z-10"} />
 
       <View className="flex-row justify-center ">
@@ -50,7 +53,7 @@ const Auth = () => {
         <View className="gap-3">
           <Button
             variant="tertiary"
-            onPress={() => console.log("signup")}
+            onPress={() => router.push("/(onboarding)/signup")}
             showIcon={true}
           >
             Sign up

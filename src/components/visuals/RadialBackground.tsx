@@ -20,10 +20,7 @@ const RadialBackground = ({
   className = "",
 }: RadialBackgroundProps) => {
   return (
-    <View
-      pointerEvents="none"
-      className={`absolute inset-0 ${className}`}
-    >
+    <View pointerEvents="none" className={`absolute inset-0 ${className}`}>
       <Svg width="100%" height="100%">
         <Defs>
           <SvgRadialGradient
