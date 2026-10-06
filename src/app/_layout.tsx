@@ -15,8 +15,10 @@ import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
-  const [loaded] = useFonts({
+  const [loaded, error] = useFonts({
     Lexend_100Thin,
     Lexend_200ExtraLight,
     Lexend_300Light,
@@ -29,12 +31,14 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (loaded) {
+    if (loaded || error) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
+  }, [loaded, error]);
 
-  if (!loaded) return null;
+  if (!loaded && !error) {
+    return null;
+  }
 
   return <Stack screenOptions={{ headerShown: false }} />;
 }
